@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛙语言 - 由蛙禾创造的编程语言</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        frog: {
+                            green: '#4CAF50',
+                            dark: '#2E7D32',
+                            light: '#81C784',
+                            accent: '#FFD54F',
+                            pond: '#1976D2'
+                        }
+                    },
+                    fontFamily: {
+                        frog: ['"Comic Sans MS"', '"Marker Felt"', 'sans-serif']
+                    },
+                    animation: {
+                        'hop': 'hop 1s ease-in-out infinite',
+                        'ripple': 'ripple 2s linear infinite'
+                    },
+                    keyframes: {
+                        hop: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        ripple: {
+                            '0%': { transform: 'scale(0.8)', opacity: 1 },
+                            '100%': { transform: 'scale(1.2)', opacity: 0 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义样式 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .frog-border {
+                border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='75' height='100' viewBox='0 0 75 100'%3E%3Cpath d='M2,2 L73,2 L73,98 L2,98 L2,2' fill='none' stroke='%234CAF50' stroke-width='4' stroke-dasharray='5,5'/%3E%3C/svg%3E") 25 stretch;
+            }
+            .lily-pad {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-frog-light/30 to-frog-pond/20 min-h-screen">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-frog-green rounded-full flex items-center justify-center animate-hop">
+                    <span class="text-white font-bold text-xl">🐸</span>
+                </div>
+                <h1 class="text-2xl font-frog font-bold text-frog-dark">蛙语言</h1>
+            </div>
+            
+            <!-- 桌面导航 -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#intro" class="text-frog-dark hover:text-frog-green transition-colors font-medium">简介</a>
+                <a href="#features" class="text-frog-dark hover:text-frog-green transition-colors font-medium">特性</a>
+                <a href="#examples" class="text-frog-dark hover:text-frog-green transition-colors font-medium">示例</a>
+                <a href="#learn" class="text-frog-dark hover:text-frog-green transition-colors font-medium">学习</a>
+                <a href="#playground" class="bg-frog-green hover:bg-frog-dark text-white px-5 py-2 rounded-full transition-all transform hover:scale-105 font-medium">
+                    编程 playground
+                </a>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="menuBtn" class="md:hidden text-frog-dark text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200 absolute w-full">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+                <a href="#intro" class="text-frog-dark hover:text-frog-green transition-colors py-2 font-medium">简介</a>
+                <a href="#features" class="text-frog-dark hover:text-frog-green transition-colors py-2 font-medium">特性</a>
+                <a href="#examples" class="text-frog-dark hover:text-frog-green transition-colors py-2 font-medium">示例</a>
+                <a href="#learn" class="text-frog-dark hover:text-frog-green transition-colors py-2 font-medium">学习</a>
+                <a href="#playground" class="bg-frog-green hover:bg-frog-dark text-white px-5 py-2 rounded-full transition-all text-center font-medium">
+                    编程 playground
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <header class="pt-28 pb-20 md:pt-36 md:pb-32 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
+            <div class="absolute top-10 right-10 w-32 h-32 bg-frog-green rounded-full animate-ripple"></div>
+            <div class="absolute top-40 right-40 w-48 h-48 bg-frog-accent rounded-full animate-ripple" style="animation-delay: 0.5s"></div>
+            <div class="absolute bottom-20 right-20 w-24 h-24 bg-frog-pond rounded-full animate-ripple" style="animation-delay: 1s"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-frog font-bold text-frog-dark leading-tight text-shadow mb-6">
+                        用<span class="text-frog-green">蛙语言</span><br>快乐学编程
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-lg">
+                        蛙语言是由蛙禾创造的趣味编程语言，专为初学者设计，语法简单易懂，让编程学习像青蛙跳荷叶一样轻松有趣！
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#playground" class="bg-frog-green hover:bg-frog-dark text-white px-8 py-3 rounded-full text-center transition-all transform hover:scale-105 font-bold text-lg shadow-lg hover:shadow-xl">
+                            开始尝试 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#learn" class="bg-white hover:bg-gray-100 text-frog-dark border-2 border-frog-green px-8 py-3 rounded-full text-center transition-all transform hover:scale-105 font-bold text-lg shadow-md">
+                            学习教程
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-frog-green/20 lily-pad flex items-center justify-center shadow-xl">
+                            <div class="w-56 h-56 md:w-72 md:h-72 bg-frog-green/30 lily-pad flex items-center justify-center">
+                                <div class="text-center px-6">
+                                    <div class="text-6xl md:text-8xl mb-4 animate-hop">🐸</div>
+                                    <p class="font-frog text-xl md:text-2xl text-frog-dark font-bold">
+                                        呱！我是蛙语言
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-5 -left-5 w-20 h-20 bg-frog-accent rounded-full flex items-center justify-center shadow-lg animate-hop" style="animation-delay: 0.3s">
+                            <span class="font-bold text-frog-dark">简单</span>
+                        </div>
+                        <div class="absolute -top-5 -right-5 w-20 h-20 bg-frog-pond rounded-full flex items-center justify-center shadow-lg animate-hop" style="animation-delay: 0.6s">
+                            <span class="font-bold text-white">有趣</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 简介部分 -->
+    <section id="intro" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-frog font-bold text-frog-dark mb-4">什么是蛙语言？</h2>
+                <div class="w-24 h-1 bg-frog-green mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-frog-light/20 rounded-2xl p-8 shadow-lg border border-frog-green/20">
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        蛙语言是由<span class="font-bold text-frog-dark">蛙禾</span>创造的一种高级编程语言，旨在让编程学习变得简单有趣。它的语法设计灵感来源于青蛙的生活习性，使用"呱"、"跳"、"游"等与青蛙相关的关键词，让代码读起来像青蛙的叫声一样生动有趣。
+                    </p>
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        无论是编程初学者还是有经验的开发者，都能通过蛙语言体验到编程的乐趣。它支持面向对象编程、函数式编程等多种编程范式，同时提供了丰富的库和工具，让你可以轻松开发各种应用。
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        蛙语言的设计理念是：<span class="font-bold text-frog-green">"让编程像青蛙跳荷叶一样自然流畅"</span>。
+                    </p>
+                </div>
+                
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow transform hover:-translate-y-1 duration-300">
+                        <div class="w-14 h-14 bg-frog-green/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-child text-2xl text-frog-green"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-frog-dark mb-3">适合初学者</h3>
+                        <p class="text-gray-600">简单易懂的语法，贴近自然语言，让编程入门不再困难。</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow transform hover:-translate-y-1 duration-300">
+                        <div class="w-14 h-14 bg-frog-accent/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-gamepad text-2xl text-frog-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-frog-dark mb-3">充满乐趣</h3>
+                        <p class="text-gray-600">青蛙主题的语法和互动式学习，让编程学习像玩游戏一样有趣。</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow transform hover:-translate-y-1 duration-300">
+                        <div class="w-14 h-14 bg-frog-pond/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-rocket text-2xl text-frog-pond"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-frog-dark mb-3">功能强大</h3>
+                        <p class="text-gray-600">虽然简单易学，但蛙语言支持复杂应用开发，功能毫不逊色。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性部分 -->
+    <section id="features" class="py-20 bg-gradient-to-b from-white to-frog-light/10">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-frog font-bold text-frog-dark mb-4">蛙语言特性</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">蛙语言结合了简单易学和功能强大的特点，让编程变得轻松愉快</p>
+                <div class="w-24 h-1 bg-frog-green mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-comment text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">自然语言语法</h3>
+                        <p class="text-gray-600">使用类似自然语言的语法结构，关键词如"呱"、"跳"、"游"等，让代码更容易理解和记忆。</p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-bolt text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">即时反馈</h3>
+                        <p class="text-gray-600">代码运行结果即时显示，就像青蛙跳入水塘立刻有涟漪反应，让学习更有成就感。</p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-paint-brush text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">可视化编程</h3>
+                        <p class="text-gray-600">内置可视化工具，代码执行过程可以图形化展示，像观察青蛙在池塘中的活动一样直观。</p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-puzzle-piece text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">模块化设计</h3>
+                        <p class="text-gray-600">支持模块化编程，代码可以像荷叶一样拼接组合，提高代码复用性和可维护性。</p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-mobile text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">跨平台支持</h3>
+                        <p class="text-gray-600">蛙语言编写的程序可以在各种设备上运行，就像青蛙能在陆地和水中活动一样灵活。</p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="mr-6 mt-1">
+                        <div class="w-12 h-12 bg-frog-green rounded-full flex items-center justify-center shadow-md">
+                            <i class="fa fa-users text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-frog-dark mb-3">社区支持</h3>
+                        <p class="text-gray-600">活跃的蛙语言社区，有大量教程和示例，就像青蛙群体一样互相帮助，共同成长。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 示例部分 -->
+    <section id="examples" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-frog font-bold text-frog-dark mb-4">蛙语言示例</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">看看蛙语言代码是什么样子的，简单又有趣！</p>
+                <div class="w-24 h-1 bg-frog-green mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-gray-900 rounded-xl shadow-xl overflow-hidden mb-12">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center">
+                        <div class="flex space-x-2 mr-4">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                        <p class="text-gray-400 text-sm">hello.frog</p>
+                    </div>
+                    <div class="p-6 font-mono text-sm md:text-base text-gray-300 overflow-x-auto">
+                        <pre><span class="text-green-400">// 这是一个简单的蛙语言程序</span>
+<span class="text-yellow-300">当开始时</span>
+    <span class="text-blue-400">呱</span>(<span class="text-orange-300">"你好，我是蛙语言！"</span>)  <span class="text-green-400">// 输出文本</span>
+    <span class="text-blue-400">呱</span>(<span class="text-orange-300">"我由蛙禾创造"</span>)
+    
+    <span class="text-yellow-300">设</span> 次数 <span class="text-purple-300">=</span> <span class="text-cyan-300">3</span>
+    
+    <span class="text-yellow-300">跳</span> 次数 <span class="text-yellow-300">次</span>
+        <span class="text-blue-400">呱</span>(<span class="text-orange-300">"青蛙跳了"</span> <span class="text-purple-300">+</span> 当前次数 <span class="text-purple-300">+</span> <span class="text-orange-300">"下"</span>)
+    <span class="text-yellow-300">结束跳</span>
+<span class="text-yellow-300">结束当</span></pre>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md border border-gray-100">
+                    <h3 class="text-xl font-bold text-frog-dark mb-4">运行结果：</h3>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 font-mono text-sm">
+                        <p class="mb-2">你好，我是蛙语言！</p>
+                        <p class="mb-2">我由蛙禾创造</p>
+                        <p class="mb-2">青蛙跳了1下</p>
+                        <p class="mb-2">青蛙跳了2下</p>
+                        <p>青蛙跳了3下</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 text-center">
+                    <a href="#playground" class="inline-block bg-frog-green hover:bg-frog-dark text-white px-8 py-3 rounded-full transition-all transform hover:scale-105 font-bold shadow-lg hover:shadow-xl">
+                        尝试更多示例 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 学习路径 -->
+    <section id="learn" class="py-20 bg-frog-pond/5">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-frog font-bold text-frog-dark mb-4">学习路径</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">像青蛙成长一样，一步一步掌握蛙语言编程技能</p>
+                <div class="w-24 h-1 bg-frog-green mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="relative">
+                    <!-- 连接线 -->
+                    <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 bg-frog-green/30 transform -translate-x-1/2"></div>
+                    
+                    <!-- 步骤1 -->
+                    <div class="flex flex-col md:flex-row items-center mb-16 md:mb-24 relative">
+                        <div class="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0 order-2 md:order-1">
+                            <h3 class="text-2xl font-bold text-frog-dark mb-3">蝌蚪阶段：入门基础</h3>
+                            <p class="text-gray-600 mb-4">了解蛙语言的基本语法和概念，学会使用"呱"输出信息，使用变量存储数据。</p>
+                            <a href="#" class="text-frog-green hover:text-frog-dark font-medium inline-flex items-center md:justify-end">
+                                开始学习 <i class="fa fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="w-16 h-16 bg-frog-green rounded-full flex items-center justify-center z-10 shadow-lg order-1 md:order-2 mb-4 md:mb-0">
+                            <span class="text-white font-bold text-xl">1</span>
+                        </div>
+                        
+                        <div class="md:w-1/2 md:pl-12 order-3"></div>
+                    </div>
+                    
+                    <!-- 步骤2 -->
+                    <div class="flex flex-col md:flex-row items-center mb-16 md:mb-24 relative">
+                        <div class="md:w-1/2 md:pr-12 order-1 mb-8 md:mb-0"></div>
+                        
+                        <div class="w-16 h-16 bg-frog-green rounded-full flex items-center justify-center z-10 shadow-lg order-2 mb-4 md:mb-0">
+                            <span class="text-white font-bold text-xl">2</span>
+                        </div>
+                        
+                        <div class="md:w-1/2 md:pl-12 order-3">
+                            <h3 class="text-2xl font-bold text-frog-dark mb-3">幼蛙阶段：控制结构</h3>
+                            <p class="text-gray-600 mb-4">学习使用"跳"循环和"游"条件语句，掌握程序的流程控制，实现简单的算法。</p>
+                            <a href="#" class="text-frog-green hover:text-frog-dark font-medium inline-flex items-center">
+                                开始学习 <i class="fa fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3 -->
+                    <div class="flex flex-col md:flex-row items-center mb-16 md:mb-24 relative">
+                        <div class="md:w-1/2 md:pr-12 md:text-right mb-8 md:mb-0 order-2 md:order-1">
+                            <h3 class="text-2xl font-bold text-frog-dark mb-3">成蛙阶段：函数与模块</h3>
+                            <p class="text-gray-600 mb-4">掌握"叫"函数的定义和使用，学习如何组织代码，创建可复用的模块。</p>
+                            <a href="#" class="text-frog-green hover:text-frog-dark font-medium inline-flex items-center md:justify-end">
+                                开始学习 <i class="fa fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="w-16 h-16 bg-frog-green rounded-full flex items-center justify-center z-10 shadow-lg order-1 md:order-2 mb-4 md:mb-0">
+                            <span class="text-white font-bold text-xl">3</span>
+                        </div>
+                        
+                        <div class="md:w-1/2 md:pl-12 order-3"></div>
+                    </div>
+                    
+                    <!-- 步骤4 -->
+                    <div class="flex flex-col md:flex-row items-center relative">
+                        <div class="md:w-1/2 md:pr-12 order-1 mb-8 md:mb-0"></div>
+                        
+                        <div class="w-16 h-16 bg-frog-green rounded-full flex items-center justify-center z-10 shadow-lg order-2 mb-4 md:mb-0">
+                            <span class="text-white font-bold text-xl">4</span>
+                        </div>
+                        
+                        <div class="md:w-1/2 md:pl-12 order-3">
+                            <h3 class="text-2xl font-bold text-frog-dark mb-3">蛙王阶段：高级应用</h3>
+                            <p class="text-gray-600 mb-4">学习面向对象编程、文件操作、网络编程等高级特性，开发完整的应用程序。</p>
+                            <a href="#" class="text-frog-green hover:text-frog-dark font-medium inline-flex items-center">
+                                开始学习 <i class="fa fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 编程Playground -->
+    <section id="playground" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-frog font-bold text-frog-dark mb-4">蛙语言 Playground</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">在这里尝试编写和运行蛙语言代码，体验编程的乐趣！</p>
+                <div class="w-24 h-1 bg-frog-green mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-gray-100 rounded-xl shadow-lg overflow-hidden">
+                    <!-- 工具栏 -->
+                    <div class="bg-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center">
+                            <div class="flex space-x-2 mr-4">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            </div>
+                            <p class="text-gray-400 text-sm">蛙语言编辑器</p>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button id="runBtn" class="bg-frog-green hover:bg-frog-dark text-white px-4 py-1 rounded text-sm font-medium transition-colors">
+                                <i class="fa fa-play mr-1"></i> 运行
+                            </button>
+                            <button id="resetBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-medium transition-colors">
+                                <i class="fa fa-refresh mr-1"></i> 重置
+                            </button>
+                            <button id="exampleBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-medium transition-colors">
+                                <i class="fa fa-file-text-o mr-1"></i> 示例
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 编辑器和结果区域 -->
+                    <div class="flex flex-col md:flex-row">
+                        <!-- 编辑器 -->
+                        <div class="w-full md:w-1/2 border-b md:border-b-0 md:border-r border-gray-300">
+                            <textarea id="codeEditor" class="w-full h-80 p-4 font-mono text-sm bg-white focus:outline-none resize-none" placeholder="在这里编写蛙语言代码...">当开始时
+    呱("你好，蛙语言！")
+    呱("我由蛙禾创造")
+    
+    设 次数 = 5
+    
+    跳 次数 次
+        呱("青蛙跳了" + 当前次数 + "下")
+    结束跳
+结束当</textarea>
+                        </div>
+                        
+                        <!-- 结果区域 -->
+                        <div class="w-full md:w-1/2">
+                            <div class="bg-gray-900 text-white p-2 text-sm">
+                                运行结果：
+                            </div>
+                            <div id="outputArea" class="w-full h-72 p-4 font-mono text-sm bg-gray-900 text-gray-300 overflow-auto">
+等待运行代码...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-10 bg-frog-light/20 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-frog-dark mb-4">常用命令</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <p class="font-bold text-frog-green">呱("文本")</p>
+                            <p class="text-sm text-gray-600">输出指定文本</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <p class="font-bold text-frog-green">设 变量 = 值</p>
+                            <p class="text-sm text-gray-600">定义变量并赋值</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <p class="font-bold text-frog-green">跳 次数 次 ... 结束跳</p>
+                            <p class="text-sm text-gray-600">循环指定次数</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm">
+                            <p class="font-bold text-frog-green">游 如果 条件 ... 结束游</p>
+                            <p class="text-sm text-gray-600">条件判断</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计数据 -->
+    <section class="py-16 bg-frog-dark text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2" id="userCount">0</div>
+                    <p class="text-frog-light">活跃用户</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2" id="projectCount">0</div>
+                    <p class="text-frog-light">项目数量</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2" id="lessonCount">0</div>
+                    <p class="text-frog-light">学习课程</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2" id="funLevel">0</div>
+                    <p class="text-frog-light">乐趣指数</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-frog-green rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">🐸</span>
+                        </div>
+                        <h3 class="text-xl font-frog font-bold">蛙语言</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        由蛙禾创造的趣味编程语言，让编程学习变得简单有趣。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">学习资源</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-frog-green transition-colors">教程</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">文档</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">示例</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">社区</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-frog-green transition-colors">论坛</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">贡献者</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">活动</a></li>
+                        <li><a href="#" class="hover:text-frog-green transition-colors">支持</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center"><i class="fa fa-envelope-o mr-2"></i> contact@frog-lang.com</li>
+                        <li class="flex items-center"><i class="fa fa-github mr-2"></i> GitHub</li>
+                        <li class="flex items-center"><i class="fa fa-twitter mr-2"></i> Twitter</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2023 蛙语言 - 由蛙禾创造。保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        document.getElementById('menuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-lg');
+                navbar.classList.remove('py-3', 'shadow-md');
+            } else {
+                navbar.classList.add('py-3', 'shadow-md');
+                navbar.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+        
+        // 代码运行功能模拟
+        document.getElementById('runBtn').addEventListener('click', function() {
+            const code = document.getElementById('codeEditor').value;
+            const outputArea = document.getElementById('outputArea');
+            
+            // 清空输出区域
+            outputArea.innerHTML = '';
+            
+            // 添加加载效果
+            outputArea.innerHTML = '运行中... 🐸<br>';
+            
+            // 模拟代码运行延迟
+            setTimeout(() => {
+                // 简单的代码解析和执行模拟
+                let output = '';
+                
+                // 检测"呱"命令
+                const printMatches = code.match(/呱\("(.*?)"\)/g);
+                if (printMatches) {
+                    printMatches.forEach(match => {
+                        const text = match.match(/呱\("(.*?)"\)/)[1];
+                        output += text + '<br>';
+                    });
+                }
+                
+                // 检测循环
+                const loopMatch = code.match(/跳 (\d+) 次/);
+                if (loopMatch) {
+                    const count = parseInt(loopMatch[1]);
+                    const loopTextMatch = code.match(/呱\("(.*?\+.*?)"\)/);
+                    
+                    if (loopTextMatch) {
+                        const loopText = loopTextMatch[1];
+                        for (let i = 1; i <= count; i++) {
+                            const text = loopText.replace(/当前次数/, i);
+                            output += text + '<br>';
+                        }
+                    }
+                }
+                
+                // 如果没有匹配到任何命令
+                if (output === '') {
+                    output = '运行成功！<br>没有输出内容。';
+                }
+                
+                outputArea.innerHTML = output;
+            }, 800);
+        });
+        
+        // 重置代码
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            document.getElementById('codeEditor').value = `当开始时
+    呱("你好，蛙语言！")
+    呱("我由蛙禾创造")
+    
+    设 次数 = 5
+    
+    跳 次数 次
+        呱("青蛙跳了" + 当前次数 + "下")
+    结束跳
+结束当`;
+            document.getElementById('outputArea').innerHTML = '等待运行代码...';
+        });
+        
+        // 示例代码
+        document.getElementById('exampleBtn').addEventListener('click', function() {
+            document.getElementById('codeEditor').value = `当开始时
+    呱("这是一个计算青蛙年龄的程序")
+    
+    设 年龄 = 3
+    呱("青蛙今年" + 年龄 + "岁")
+    
+    游 如果 年龄 < 2
+        呱("这是一只小青蛙")
+    结束游
+    
+    游 如果 年龄 >= 2 并且 年龄 < 5
+        呱("这是一只青年青蛙")
+    结束游
+    
+    游 如果 年龄 >= 5
+        呱("这是一只成年青蛙")
+    结束游
+    
+    呱("明年，青蛙将会是" + (年龄 + 1) + "岁")
+结束当`;
+            document.getElementById('outputArea').innerHTML = '请点击"运行"按钮查看结果...';
+        });
+        
+        // 数字增长动画
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // 当元素进入视口时触发动画
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'userCount') {
+                        animateValue('userCount', 0, 15600, 2000);
+                    } else if (entry.target.id === 'projectCount') {
+                        animateValue('projectCount', 0, 8430, 2000);
+                    } else if (entry.target.id === 'lessonCount') {
+                        animateValue('lessonCount', 0, 42, 2000);
+                    } else if (entry.target.id === 'funLevel') {
+                        animateValue('funLevel', 0, 100, 2000);
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        // 观察统计数字元素
+        document.querySelectorAll('#userCount, #projectCount, #lessonCount, #funLevel').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
